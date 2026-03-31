@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Solar System VR</title>
+
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
+  <!-- Extras (movement + controls) -->
+  <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
+</head>
+
+<body>
+<a-scene>
+
+  <!-- 🌌 Space Background -->
+  <a-sky color="#000"></a-sky>
+
+  <!-- 🎮 VR RIG (Camera + Movement + Controllers) -->
+  <a-entity id="rig" position="0 1.6 40" movement-controls="speed: 0.2; fly: true">
+
+    <!-- 🎥 Camera -->
+    <a-entity camera look-controls wasd-controls>
+
+      <!-- 🌟 Infinite Stars (attached to camera) -->
+      <a-entity id="stars"></a-entity>
+
+    </a-entity>
+
+    <!-- 🖐️ Left Controller -->
+    <a-entity
+      hand-controls="hand: left"
+      laser-controls="hand: left"
+      raycaster="objects: .clickable"
+      line="color: white">
+    </a-entity>
+
+    <!-- 🖐️ Right Controller -->
+    <a-entity
+      hand-controls="hand: right"
+      laser-controls="hand: right"
+      raycaster="objects: .clickable"
+      line="color: white">
+    </a-entity>
+
+  </a-entity>
+
+  <!-- 📦 Load Solar System Model -->
+  <a-assets>
+    <a-asset-item id="solar" src="models/solarsystem.glb"></a-asset-item>
+  </a-assets>
+
+  <!-- ☀️ Solar System -->
+  <a-entity 
+    gltf-model="#solar"
+    position="0 1.6 -5"
+    scale="8 8 8"
+    animation-mixer
+    class="clickable">
+  </a-entity>
+
+  <!-- 🌟 STAR SCRIPT -->
+  <script>
+    const container = document.querySelector('#stars');
+
+    for (let i = 0; i < 1000; i++) {
+      let star = document.createElement('a-sphere');
+
+      star.setAttribute('radius', '0.05');
+      star.setAttribute('color', '#FFF');
+
+      // 🌌 spherical distribution
+      let radius = 40;
+      let theta = Math.random() * 2 * Math.PI;
+      let phi = Math.acos((Math.random() * 2) - 1);
+
+      let x = radius * Math.sin(phi) * Math.cos(theta);
+      let y = radius * Math.sin(phi) * Math.sin(theta);
+      let z = radius * Math.cos(phi);
+
+      star.setAttribute('position', `${x} ${y} ${z}`);
+
+      // ✨ twinkle effect
+      star.setAttribute('animation', `
+        property: opacity;
+        from: 0.3;
+        to: 1;
+        dir: alternate;
+        loop: true;
+        dur: ${500 + Math.random() * 1500}
+      `);
+
+      container.appendChild(star);
+    }
+  </script>
+
+</a-scene>
+</body>
+</html>
